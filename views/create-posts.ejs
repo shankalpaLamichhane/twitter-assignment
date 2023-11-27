@@ -1,0 +1,28 @@
+
+
+<h1>Post content </h1>
+<%- message %>
+<form method="post" action="/posts">
+    New Topic:  <input name="customTopic"/> <br/>
+    or, select existing topic:
+    <select id="topic" name="topic">
+      <option value="Tech">Tech</option>
+      <option value="Business">Business</option>
+      <option value="Politics">Politics</option>
+      <option value="Science">Science</option>
+      <option value="Entertainment">Entertainment</option>
+    </select>
+    <br>
+
+    <label for="title">Title:</label>
+    <input type="text" id="title" name="title" required>
+    <br>
+
+    <label for="description">Posting Text (Description): </label>
+    <textarea id="description" name="description" rows="4" required></textarea>
+    <br>
+
+    <button type="submit">Submit</button>
+</form>
+
+<%- include('foot') -%>

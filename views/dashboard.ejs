@@ -1,0 +1,69 @@
+
+
+<h1>Dashboard</h1>
+
+<h1>Hello, <%= user.username %>!</h1>
+Here is your feed !! 
+
+<%- message %>
+
+<!-- posts.ejs -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<style>
+        /* Add your CSS styles for the card here */
+        .card {
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            padding: 16px;
+            margin: 16px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .card-title {
+            font-size: 18px;
+            font-weight: bold;
+            margin-bottom: 8px;
+        }
+
+        .card-description {
+            font-size: 14px;
+        }
+    </style>
+<body>
+  <h1>Posts</h1>
+
+  <% for (const topic in posts) { %>
+    <h2><%= topic %></h2>
+    <ul>
+      <% posts[topic].forEach(post => { %>
+        <li>
+        <div class="card">
+          <div class="card-id"><%= post.id %></p>
+            <div class="card-title"><%= post.title %></div>
+            <div class="card-description"><%= post.description %></div>
+        </div>
+        <br/>
+        <form method="get" action="/like/<%= post.id %>">
+          <% if(post.like) { %>
+            <input type="submit" value="Liked!!"></input>
+          <% } else{%>
+            <input type="submit" value="Like"></input>
+          <% } %>
+        </form>
+        </li>
+        <br/>
+      <% }); %>
+    </ul>
+  <% } %>
+</body>
+</html>
+
+<%- include('foot') -%>
+<a href="/edit-subscription">Edit your subscription</a><br/>
+<a href="/create-posts">Create a New post</a> <br/>
+<a href="/logout"> Logout </a>

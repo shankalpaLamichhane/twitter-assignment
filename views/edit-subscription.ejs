@@ -1,0 +1,35 @@
+
+
+<h1>Edit your subscription </h1>
+<%- message %>
+<form method="post" action="/edit-subscription">
+  <label>Edit the topics you want to subscribe: </label>
+  <br/>
+  <input type="checkbox" name="subscription" value="Tech"> Tech <br/>
+  <input type="checkbox" name="subscription" value="Business"> Business<br/>
+  <input type="checkbox" name="subscription" value="Politics"> Politics
+  
+  <div id="showMore" style="display: none;">
+    <input type="checkbox" name="subscription" value="Science"> Science<br/>
+    <input type="checkbox" name="subscription" value="Entertainment"> Entertainment<br/>
+    <!-- Add more static items as needed -->
+  </div>
+    </p>
+    <p>
+      <p href="" id="showMoreText" style="color: blue" onclick="toggleShowMore()">Show More</p>
+      <input type="submit" value="Edit subscription">
+    </p>
+  
+    <script>
+      function toggleShowMore() {
+        const showMoreDiv = document.getElementById('showMore');
+        showMoreDiv.style.display = showMoreDiv.style.display === 'none' ? 'block' : 'none';
+        const showMoreText = document.getElementById('showMoreText');
+        if(showMoreText.innerText == 'Show More')
+        showMoreText.innerText = 'Show Less'
+      else
+      showMoreText.innerText = 'Show More'
+  
+      }
+    </script>
+  </form>

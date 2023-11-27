@@ -1,0 +1,55 @@
+
+<%- include('head', { title: 'Authentication Example' }) -%>
+
+<h1>Welcome to ISAT Twitter </h1>
+<%- message %>
+<form method="post" action="/subscribe">
+  <p>
+    <label for="username">Desired User Name:</label>
+    <input required type="text" name="username" id="username">
+  </p>
+  <p>
+<label>Select the topics you want to subscribe: </label>
+<br/>
+<input type="checkbox" name="subscription" value="Tech"> Tech <br/>
+<input type="checkbox" name="subscription" value="Business"> Business<br/>
+<input type="checkbox" name="subscription" value="Politics"> Politics
+
+<div id="showMore" style="display: none;">
+  <input type="checkbox" name="subscription" value="Science"> Science<br/>
+  <input type="checkbox" name="subscription" value="Entertainment"> Entertainment<br/>
+  <!-- Add more static items as needed -->
+</div>
+  </p>
+  <p>
+    <p href="" id="showMoreText" style="color: blue" onclick="toggleShowMore()">Show More</p>
+
+    <input type="submit" value="Submit">
+  </p>
+
+  <script>
+    function toggleShowMore() {
+      const showMoreDiv = document.getElementById('showMore');
+      showMoreDiv.style.display = showMoreDiv.style.display === 'none' ? 'block' : 'none';
+      const showMoreText = document.getElementById('showMoreText');
+      if(showMoreText.innerText == 'Show More')
+      showMoreText.innerText = 'Show Less'
+    else
+    showMoreText.innerText = 'Show More'
+
+    }
+  </script>
+</form>
+
+<form  method="post" action = "/login">
+  Already a user? Sign in <br/>
+  <label for="username"> User Name:</label>
+
+  <input required type="text" name="username" id="username">
+
+  <br/>
+  <input type="submit" value="Login" >
+
+</form>
+
+<%- include('foot') -%>

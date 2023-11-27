@@ -1,0 +1,22 @@
+
+
+<h1>Post content </h1>
+<%- message %>
+<h1>Posts</h1>
+
+<% if (posts.length > 0) { %>
+  <ul>
+    <% posts.forEach(post => { %>
+      <li>
+        <h5>Title: <%= post.title %></h5>
+        <p>Id: <%= post._id %></p>
+        <p>Topic: <%= post.topic %></p>
+        <p>Description: <%= post.description %></p>
+        <p></p>
+      </li> <!-- Replace "title" with the actual field you want to display -->
+    <% }); %>
+  </ul>
+<% } else { %>
+  <p>No posts found.</p>
+<% }  %>
+<%- include('foot') -%>
