@@ -12,8 +12,10 @@ var app = module.exports = express();
 app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'views'));
 app.use(cookieParser());
+require('dotenv').config();
 
-const uri = "mongodb+srv://primrose:primrose@cluster0.6wbkf8l.mongodb.net/?retryWrites=true&w=majority";
+
+const uri = process.env.MONGO_URI;
 
 const client = new MongoClient(uri);// config
 
