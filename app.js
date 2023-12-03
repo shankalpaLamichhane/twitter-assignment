@@ -1,6 +1,5 @@
 
 var express = require('express');
-var hash = require('pbkdf2-password')()
 var path = require('path');
 var session = require('express-session');
 const { MongoClient } = require("mongodb");
@@ -24,6 +23,7 @@ const database = client.db("isat_twitter");
 const userCollection = database.collection("users");
 const postCollection = database.collection("posts");
 const likesCollection = database.collection("likes");
+const commentsCollection = database.collection("comments");
 
 // middleware
 
@@ -47,31 +47,6 @@ app.use(function(req, res, next){
   next();
 });
 
-// dummy database
-
-var users = {
-  tj: { name: 'tj' }
-};
-
-// when you create a user, generate a salt
-// and hash the password ('foobar' is the pass here)
-
-hash({ password: 'foobar' }, function (err, pass, salt, hash) {
-  if (err) throw err;
-  // store the salt & hash in the "db"
-  users.tj.salt = salt;
-  users.tj.hash = hash;
-});
-
-function restrict(req, res, next) {
-  if (req.session.user) {
-    next();
-  } else {
-    req.session.error = 'Access denied!';
-    res.redirect('/login');
-  }
-}
-
 app.get('/create-posts', function(req,res){
   res.render('create-posts')
 })
@@ -83,7 +58,7 @@ app.get('/', async function(req, res){
   }
 
   const existingUser = await userCollection.findOne({username: user})
-  console.log('TYHE EXSISTING USER IS ',existingUser)
+  // console.log('TYHE EXSISTING USER IS ',existingUser)
   const transformedPost = await getPostsByTopic(existingUser)
   res.render('dashboard',{posts: transformedPost, user: existingUser})
 });
@@ -95,16 +70,25 @@ async function getPostsByTopic(user){
    "topic": {$in: subscription}
   }).toArray();  
 
+  const postsWithComments = []
+  for(var i=0; i< posts.length; i++ ){
+    const comments = await commentsCollection.find({postId: posts[i]._id.toString()}).toArray()
+    if(comments.length>0){
+      console.log('COMMENTS',JSON.stringify(comments))
+    }
+    postsWithComments.push({...posts[i],comments:comments})
+
+  }
 
   const transformedPost = {};
 
-  for(var i=0; i< posts.length; i++ ){
-     const { _id, topic, title, description } = posts[i];
+  for(var i=0; i< postsWithComments.length; i++ ){
+     const { _id, topic, title, description,comments } = postsWithComments[i];
 
 
     const postLikedByUser = await likesCollection.findOne({username: user.username, postId: _id.toString()})
 
-    console.log('THE POST LIKED BY USER IS ',postLikedByUser)
+    // console.log('THE POST LIKED BY USER IS ',postLikedByUser)
     if (!transformedPost[topic]) {
       transformedPost[topic] = [];
     }
@@ -120,37 +104,11 @@ async function getPostsByTopic(user){
       id: _id.toString(), // Convert ObjectId to string
       title: title,
       description: description,
-      like: like
+      like: like,
+      comments: comments,
     });
   }
-  posts.forEach(async (item) => {
-    const { _id, topic, title, description } = item;
 
-    console.log('THE ITEM IS ',item)
-
-
-    const postLikedByUser = await likesCollection.findOne({username: user.username, postId: '656403dc8d5a96f9b9388887'})
-
-    console.log('THE POST LIKED BY USER IS ',postLikedByUser)
-    if (!transformedPost[topic]) {
-      transformedPost[topic] = [];
-    }
-
-    let like = false;
-    if(postLikedByUser){
-      like = true;
-    }else{
-      like = false;
-    }
-  
-    await transformedPost[topic].push({
-      id: _id.toString(), // Convert ObjectId to string
-      title: title,
-      description: description,
-      like: like
-    });
-  });
-  console.log('THE TRANSFORMED POST ARE ',transformedPost)
   return transformedPost;
 }
 
@@ -200,9 +158,25 @@ app.get('/like/:id',async function(req,res) {
   res.render('dashboard',{posts: transformedPost, user: existingUser})
 })
 
-app.get('/restricted', restrict, function(req, res){
-  res.send('Wahoo! restricted area, click to <a href="/logout">logout</a>');
-});
+app.post('/comment/:id',async function(req,res) {
+  const id = req.params.id;
+  const commentText = req.body.commentText;
+  const username = req.cookies['authCookie']
+  try{
+      const comment = {
+        postId : id,
+        commentText: commentText,
+        username: username
+      }
+      await commentsCollection.insertOne(comment);
+      console.log(`Commented the post with id ${id}`)
+  }catch(err){
+    console.log('THE ERR IS ',err)
+  }
+  const existingUser = await userCollection.findOne({username: username})
+  const transformedPost = await getPostsByTopic(existingUser)
+  res.render('dashboard',{posts: transformedPost, user: existingUser})
+})
 
 app.get('/logout', function(req, res){
   res.cookie('authCookie', '', { maxAge: 0 }); // Expires immediately

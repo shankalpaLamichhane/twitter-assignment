@@ -35,7 +35,7 @@ Here is your feed !!
         }
     </style>
 <body>
-  <h1>Posts</h1>
+  <!-- <h1>Posts</h1>
 
   <% for (const topic in posts) { %>
     <h2><%= topic %></h2>
@@ -55,6 +55,53 @@ Here is your feed !!
             <input type="submit" value="Like"></input>
           <% } %>
         </form>
+        </li>
+        <br/>
+      <% }); %>
+    </ul>
+  <% } %> -->
+
+  <h1>Posts</h1>
+
+  <% for (const topic in posts) { %>
+    <h2><%= topic %></h2>
+    <ul>
+      <% posts[topic].forEach(post => { %>
+        <li>
+          <div class="card">
+            <div class="card-title"><%= post.title %></div>
+            <div class="card-description"><%= post.description %></div>
+          </div>
+          <br/>
+          <form method="get" action="/like/<%= post.id %>">
+            <% if(post.like) { %>
+              <input type="submit" value="Liked!!"></input>
+            <% } else{%>
+              <input type="submit" value="Like"></input>
+            <% } %>
+          </form>
+
+          <ul>
+            <% post.comments.forEach(comment => { %>
+              <li>
+                <div class="card">
+                  <p class="card-description">Comment: <%= comment.commentText %></p>
+                  <small class="card-description">commented by : <%= comment.username %></small>
+                </div>
+              </li>
+              <% }); %>
+
+          </ul>
+
+          <!-- Form for submitting comments -->
+          <br/>
+
+          <form method="post" action="/comment/<%= post.id %>">
+            <label for="commentText">Add a Comment:</label>
+            <input type="text" id="commentText" name="commentText" required>
+            <input type="submit" value="Comment">
+          </form>
+
         </li>
         <br/>
       <% }); %>
